@@ -31,8 +31,9 @@ app.post('/api/login', (req, res) => {
 		email: 'ty@tymiller.net'
 	}
 
-	//Payload, Secret Key, Callback - returns token to user
-	jwt.sign({user}, 'secretkey', (err, token) => {
+	//Payload, Secret Key, Expires In, Callback -  then returns token to user
+	//These options are in jwt documentation
+	jwt.sign({user}, 'secretkey', { expiresIn: '3 days' }, (err, token) => {
 		res.json({
 			token
 		});
