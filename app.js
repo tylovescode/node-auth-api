@@ -11,8 +11,15 @@ app.get('/api', (req, res) => {
 
 			//verifyToken is middleware function
 app.post('/api/posts', verifyToken, (req, res) => {
-	res.json({
-		message: 'Post created'
+	jwt.verify(req.token, 'secretkey', (err, authData) => {
+		if(err) {
+			res.sendStatus(403);
+		} else {
+			res.json({
+		message: 'Post created',
+		authData
+		});
+	}
 	});
 });
 
@@ -42,7 +49,15 @@ function verifyToken(req, res, next) {
 	const bearerHeader = req.headers['authorization'];
 	// Check if bearer is undefined
 	if(typeof bearerHeader !== 'undefined') {
-
+		//Split at the space - see FORMAT OF TOKEN above
+		//Turns it into an array [bearer 0, access token 1]
+		const bearer = bearerHeader.split(' ');
+		//Get token from the split array
+		const bearerToken = bearer[1];
+		//Set the token
+		req.token = bearerToken;
+		//Next middleware
+		next();
 	} else {
 		res.sendStatus(403);
 	}
